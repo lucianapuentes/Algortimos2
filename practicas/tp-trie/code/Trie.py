@@ -124,4 +124,63 @@ def searchR(Tnode,element):
     else:
         #print("caso 5")
         return False
+#delete(T,element)
+#Descripción: Elimina un elemento se encuentre dentro del Trie
+#Entrada: El Trie sobre la cual se quiere eliminar el elemento (Trie)  y el valor del elemento (palabra) a  eliminar.
+#Salida: Devuelve False o True  según se haya eliminado el elemento.
 
+def delete(T,element):
+    words=0
+    if T==None or element==None:
+        return False
+    else:
+        if search(T,element)==False:
+            return True
+        else:
+            if T.root.key!=element and T.root.children!=None:
+                root=searchChild(T.root.children,element[0])
+                if root!=None:
+                    return deleteR(root,element,words)
+                else:
+                    return False
+            else:
+                return deleteR(T.root,element,words)
+
+def deleteR(Tnode,element,words):
+    for i in range(0,len(element)):
+        if Tnode.isEndOfWord==True:
+            words=words+1
+        if Tnode.key==element[i]:
+            if i==len(element)-1:
+                words=words-1
+                if Tnode.children==None and words==0:
+                    #print("palabra única")
+                    #deleteNode(Tnode,element,None)
+                    return True
+                elif Tnode.children!=None:
+                    #print("es parte de una palabra más larga")
+                    Tnode.isEndOfWord=False
+                    return True
+                else:
+                    #print("contiene palabras más pequeñas")
+                    #print(Tnode.key,"key")
+                    Tnode.isEndOfWord=False
+                    deleteNode(Tnode,element)
+                    return False
+            else:
+                Tnode=searchChild(Tnode.children,element[i+1])
+                
+
+def deleteNode(node,element):
+    for i in range(0,len(element)):
+        #print(node.key,"key a borrar")
+        #print(node.isEndOfWord,"end of word")
+        parent=node.parent
+        if len(node.parent.children)>1:
+            parent.children.remove(node)
+            break
+        
+        node.key=None
+        node.children=None
+        node=parent
+    
