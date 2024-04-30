@@ -184,3 +184,106 @@ def deleteNode(node,element):
         node.children=None
         node=parent
     
+#Implementar un algoritmo que dado un árbol Trie T, un patrón p (prefijo) y un entero n, 
+#escriba todas las palabras del árbol que empiezan por p y sean de longitud n. 
+def CommonPrefix(T,p,n):
+    if T.root==None:
+        return
+    charFound="" #caracteres de p
+    lastChar=findCommonPrefixR(T.root,p,p,charFound)
+    if lastChar==None:
+        return None
+    words=[]
+    foundWord=p #inicio
+    return findwordsPrefix(lastChar,words,n,foundWord,p)
+
+def findCommonPrefixR(current,p,p_aux,charFound):
+    if current==None:
+        return None
+    if len(p)==0:
+        if p_aux==charFound:
+            return current #ultimo caracter del prefijo
+        return None
+    next=None
+    if current.children!=None:
+        for child in current.children:
+            if child.key==p[0]:
+                next=child #nodo con key del prefijo
+                charFound=charFound+child.key
+        if next!=None:
+            return findCommonPrefixR(next,p[1:],p_aux,charFound)
+        return None
+    return None
+def findwordsPrefix(current,words,n,foundWord,p):
+    if current==None:
+        return words
+    if current.isEndOfWord==True:
+        if len(foundWord)==n:
+            words.append(foundWord)
+    if current.children!=None:
+        for child in current.children:
+            findwordsPrefix(child,words,n,foundWord+child.key,p)
+    return words
+#Implementar un algoritmo que dado los Trie T1 y T2 devuelva True si estos 
+#pertenecen al mismo documento y False en caso contrario.
+#Se considera que un  Trie pertenece al mismo documento cuando:
+#Ambos Trie sean iguales (esto se debe cumplir)
+#Si la implementación está basada en LinkedList, considerar el caso donde las palabras 
+#hayan sido insertadas en un orden diferente.
+#En otras palabras, analizar si todas las palabras de T1 se encuentran en T2. 
+def belongToSameDocument(T1,T2):
+    if T1==None or T2==None:
+        return False
+    return areEqual(T1.root,T2.root,True)
+    
+def areEqual(T1node,T2node,flag):
+    if T1node==None or T2node==None:
+        flag=False
+        return flag
+    if T1node.key==T2node.key:
+        if T1node.children==None and T2node.children==None:
+            flag=True
+            return flag
+        elif T1node.children!=None and T2node.children!=None:
+            if len(T1node.children)!=len(T2node.children):
+                flag=False
+                return flag
+            for i in range(0,len(T1node.children)):
+                areEqual(T1node.children[i],T2node.children[i],flag)
+                if flag==False:
+                    break
+    else:
+        flag=False
+    return flag
+            
+#Implemente un algoritmo que dado el Trie T devuelva True si existen en el documento T dos cadenas invertidas. 
+#Dos cadenas son invertidas si se leen de izquierda a derecha y contiene los mismos caracteres que si se 
+#lee de derecha a izquierda, ej: abcd y dcba son cadenas invertidas, gfdsa y asdfg son cadenas invertidas, 
+#sin embargo abcd y dcka no son invertidas ya que difieren en un carácter.
+
+#inverse=word[::-1]
+def get_words(root):
+    words = []
+    get_wordsR(root,"",words)
+    return words
+
+def get_wordsR(node,current_word, words):
+    if node!=None:
+        if node.key!=None:
+            current_word+=node.key
+        if node.isEndOfWord:
+            words.append(current_word)
+        if node.children!=None:
+            for i in range(0,len(node.children)):
+                aux=current_word
+                get_wordsR(node.children[i],current_word,words)
+                current_word=aux
+def invertedChains(T):
+    if T==None:
+        return
+    words=get_words(T.root)
+    for i in range(0,len(words)):
+        word=words[i]
+        if search(T,word[::-1]):
+            return True
+    return False
