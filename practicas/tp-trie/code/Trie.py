@@ -287,3 +287,45 @@ def invertedChains(T):
         if search(T,word[::-1]):
             return True
     return False
+#Implementar la función autoCompletar(Trie, cadena) dentro del módulo trie.py, que dado el árbol Trie T y 
+#la cadena  devuelve la forma de auto-completar la palabra. Por ejemplo, para la 
+#llamada autoCompletar(T, ‘groen’) devolvería “land”, y a que podemos tener “groenlandia” o “groenlandés” 
+#(en este ejemplo la palabra groenlandia y groenlandés pertenecen al documento que representa el Trie). 
+#Si hay varias formas o ninguna, devolvería la cadena vacía. 
+#Por ejemplo, autoCompletar(T, ma’) devolvería “” (cadena vacia) si T presenta las cadenas “madera” y “mama”. 
+def autoCompletar(T,cadena):
+    if T==None or cadena=="":
+        return
+    lastChar=findCommonPrefixR(T.root,cadena,cadena,"")
+    #print(lastChar.key)
+    words=get_words(lastChar)
+    #print(words)
+    suggestions=[]
+    chars_s=""
+    for j in range(0,len(words)):
+        word=words[j][1:]
+        #print(word, "word")
+        index=0
+        #print(word[index])
+        for n in range(j+1,len(words)):
+            word_aux=words[n][1:]
+            #print(word_aux,"word aux")
+            for i in range(0,len(word)):
+                if word[index]==word_aux[index]:
+                    #print("match")
+                    chars_s+=word[index]
+                    index=index+1
+                    #print(chars_s,"chars s")
+                elif chars_s!="":
+                    if suggestions!=[]:
+                        if len(chars_s)>len(suggestions[0]):
+                            suggestions[0]=chars_s
+                            chars_s=""
+                            index=0
+                    else:
+                        suggestions.append(chars_s)
+                    break
+    if suggestions==[]:
+        return ""
+    else:
+        return suggestions[0]
